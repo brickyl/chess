@@ -1,7 +1,7 @@
 import unittest
 # import expecttest
 from board import Board
-
+from utils.notation import decodeChessNotation
 class Testing(unittest.TestCase):
     def test_foo(self):
         self.assertEqual(1, 1)
@@ -13,4 +13,5 @@ class Testing(unittest.TestCase):
     #     self.assertExpectedInline(print(), "")
 
 if __name__ == '__main__':
-    unittest.main()
+    #unittest.main()
+    print(decodeChessNotation("B5 B6"))

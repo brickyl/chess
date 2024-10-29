@@ -1,4 +1,4 @@
-from piece import Piece
+from chess.pieces.piece import Piece
 from abc import ABCMeta, abstractmethod
 
 class StraightMove(Piece):

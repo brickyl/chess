@@ -1,30 +1,42 @@
+from pieces.pawn import Pawn
+from constants import Color, Move
+
+
 class Board:
     def __init__(self):
         self.board = [[None for i in range(8)] for j in range(8)]
-        self.mapping = {'a' : 0, 'b' : 1, 'c' : 2, 'd' : 3, 'e' : 4, 'f' : 5, 'g' : 6, 'h' : 7}
-        self.mapping = {'a' : 0, 'b' : 1, 'c' : 2, 'd' : 3, 'e' : 4, 'f' : 5, 'g' : 6, 'h' : 7}
+        for i in range(8):
+            for j in range(8):
+                if i == 1:
+                    pawn = Pawn(i, j, Color.WHITE)
+                    self.board[i][j] = pawn
+
         self.pieces = []
         self.inactivePieces = []
 
     def printBoard(self):
         print()
         for i in range(len(self.board)):
-            line = str(8-i) + "  "
+            line = str(8 - i) + "  "
             for j in range(len(self.board[0])):
                 piece = self.board[i][j]
                 if piece == None:
                     line += "x"
                     line += " "
                 else:
-                    line += piece.toString()
+                    line += str(piece)
                     line += " "
             print(line)
         print()
         print("   a b c d e f g h")
         print()
 
-    def givePieceAtLocation(self, row, col):
-        
+    def getPieceAtLocation(self, row, col):
+        piece = self.board[row][col]
+        if piece != None:
+            return str(self.board[row][col])
+        return "x"
+
 
 b = Board()
 b.printBoard()

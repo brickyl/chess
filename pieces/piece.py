@@ -2,12 +2,12 @@ from abc import ABCMeta, abstractmethod
 
 class Piece(object, metaclass=ABCMeta):
     @abstractmethod
-    def __init__(self, row, col):
+    def __init__(self, name, row, col):
         # self.color = None
         self.inactive = False # includes captured pieces or promoted pawns
         self.row = row # ranks
         self.col = col # files
-        self.name = None
+        self.name = name
         # self.abbreviation = None
         # self.startPosition = None
         
@@ -22,7 +22,7 @@ class Piece(object, metaclass=ABCMeta):
     def capture(self, piece):
         pass
 
-    def toString(self):
+    def __str__(self):
         return self.name
 
 
