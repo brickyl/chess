@@ -1,0 +1,28 @@
+Classes and methods:
+- Board
+    - printBoard
+    - coords to row col
+    - row col to coords
+    # Represented by 2-D array
+    # Contains the empty board, as well as where every piece is 
+- Player(?)
+- Piece
+- each piece
+- Game (storing info about players? boards)
+
+- under attack is a problem..
+- pin
+- board contains 
+
+-----------------------
+
+Process per move:
+- [GAME] prompt player ___ for a move
+- [GAME] detect if move is formatted correctly
+    - [GAME, board] if so, identify the piece that is in that square. 
+    - [PIECE, board] take the destination square and figure out what kind of move it is
+        - [GAME, piece, board] if able to match the requested move to a valid move type, then execute it
+            - "execute it" means take the new piece and put it in new position, "delete" the old piece
+        - [GAME] if not, reject move
+    - [GAME] if not, reject move
+- [GAME, board] check if king is under check or checkmate
