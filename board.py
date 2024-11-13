@@ -11,13 +11,14 @@ class Board:
                     pawn = Pawn(i, j, Color.WHITE)
                     self.board[i][j] = pawn
 
-        self.pieces = []
-        self.inactivePieces = []
+        # self.pieces = []
+        # self.inactivePieces = []
 
     def printBoard(self):
+    # debugging mode: the rows are 0-indexed right now
         print()
         for i in range(len(self.board)):
-            line = str(8 - i) + "  "
+            line = str(i) + "  "
             for j in range(len(self.board[0])):
                 piece = self.board[i][j]
                 if piece == None:
@@ -28,14 +29,15 @@ class Board:
                     line += " "
             print(line)
         print()
-        print("   a b c d e f g h")
+        print("   h g f e d c b a")
         print()
 
     def getPieceAtLocation(self, row, col):
         piece = self.board[row][col]
-        if piece != None:
-            return str(self.board[row][col])
-        return "x"
+        return piece
+    
+    def setPieceAtLocation(self, row, col, piece):
+        self.board[row][col] = piece
 
 
 b = Board()
