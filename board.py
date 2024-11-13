@@ -11,6 +11,10 @@ class Board:
                     pawn = Pawn(i, j, Color.WHITE)
                     self.board[i][j] = pawn
 
+                if i == 6:
+                    pawn = Pawn(i, j, Color.BLACK)
+                    self.board[i][j] = pawn
+
         # self.pieces = []
         # self.inactivePieces = []
 

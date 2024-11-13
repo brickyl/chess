@@ -18,7 +18,7 @@ class Pawn(Piece):
                     return Move.CAPTURE
         else:
             # checking if the pawn row is +1 and the column is the same
-            if abs(row - self.row) == self.color.value * 1 and col == self.col:
+            if row - self.row == self.color.value * 1 and col == self.col:
                 return Move.REGULAR
             else:
                 return Move.INVALID
