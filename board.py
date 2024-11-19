@@ -19,10 +19,10 @@ class Board:
         # self.inactivePieces = []
 
     def printBoard(self):
-    # debugging mode: the rows are 0-indexed right now
+        # debugging mode: the rows are 0-indexed right now
         print()
         for i in range(len(self.board)):
-            line = str(i) + "  "
+            line = str(i + 1) + "  "
             for j in range(len(self.board[0])):
                 piece = self.board[i][j]
                 if piece == None:
@@ -39,10 +39,6 @@ class Board:
     def getPieceAtLocation(self, row, col):
         piece = self.board[row][col]
         return piece
-    
+
     def setPieceAtLocation(self, row, col, piece):
         self.board[row][col] = piece
-
-
-b = Board()
-b.printBoard()

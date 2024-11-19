@@ -1,6 +1,7 @@
 from board import Board
 from pieces.pawn import Pawn
 from utils.notation import decodeChessNotation, encodeRowColNotation
+from utils.parsemove import parse_move
 from constants import Move, Color
 
 
@@ -9,37 +10,43 @@ class Chess:
         self.turn = 0
         self.board = Board()
         self.gameOver = False
+        self.player = Color.WHITE
+        startMessage = "Welcome to Chess! Enter moves by starting square to destination square by column and row (ie. b2 b3). Have fun!"
+        pieceRepMessage = "Note: White pieces are represented by uppercase characters, while black pieces are lowercase."
+        print(startMessage)
+        print(pieceRepMessage)
 
     def gameRun(self):
         while not self.gameOver:
-            # while (not self.gameOver()):
-            print("Give me a move!")
+            self.board.printBoard()
+            print(
+                "Give me a move, player '", str(self.player.name).lower(), "'!", sep=""
+            )
             move = input()
-            if len(move) != 5:
-                raise Exception("Formatted move incorrectly.")
-            startPos = move[0:2] # 'b3'
-            endPos = move[-2:] # 'b4'
-            startRowCol = decodeChessNotation(startPos) # (3, 1)
-            endRowCol = decodeChessNotation(endPos) # (4, 1)
+            parsedMove = parse_move(move)
+            startRowCol = parsedMove[0]
+            endRowCol = parsedMove[1]
 
             # Now figure out what to do with endPos
             piece = self.board.getPieceAtLocation(*startRowCol)
-            move_status = None
-            if piece != None:
-                move_status = piece.move(self.board, *endRowCol)
-            else:
-                raise Exception("No starting piece found.")
-            
-            print(self.board)
-        
+            if piece == None:
+                print("No starting piece found.")
+                return
+            elif piece.color != self.player:
+                print("Not your piece.")
+                return
+            piece.move(self.board, *endRowCol)
 
             # now figure out if the new destination is a location that the piece can get to
             # if so, classify the type of move, and any resulting actions
             # piece.tryMove(pieceAtDestination.row, pieceAtDestination.col) --> returns success or fail, and type of move
-            
 
-            self.gameOver = True
+            if self.player == Color.BLACK:
+                self.player = Color.WHITE
+            else:
+                self.player = Color.BLACK
 
+        print("------ Game over! ------")
         self.board.printBoard()
 
 

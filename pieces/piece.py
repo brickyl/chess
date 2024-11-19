@@ -1,4 +1,5 @@
 from abc import ABCMeta, abstractmethod
+from constants import Color
 
 
 class Piece(object, metaclass=ABCMeta):
@@ -24,13 +25,16 @@ class Piece(object, metaclass=ABCMeta):
     def move(self, board, row, col):
         # conducts the move
         # this might be the same function for all piece classes. if so, then just declare this function here.
-        # it might not be the same function if I use this function 
+        # it might not be the same function if I use this function
         # to make changes to other pieces during interactive moves (captures + special moves)
         pass
 
-    @abstractmethod
-    def capture(self, piece):
-        pass
+    # @abstractmethod
+    # def capture(self, piece):
+    #     pass
 
     def __str__(self):
-        return self.name
+        if self.color == Color.WHITE:
+            return self.name
+        else:
+            return self.name.lower()
