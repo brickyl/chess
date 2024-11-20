@@ -12,6 +12,7 @@ class Pawn(Piece):
 
     def check_move(self, board, row, col, lastMove):
         pieceAtDestination = board.getPieceAtLocation(row, col)
+
         if pieceAtDestination != None:
             if pieceAtDestination.color != self.color:
                 # checking for capture
@@ -24,6 +25,7 @@ class Pawn(Piece):
                     ):
                         return Move.PAWN_PROMOTE
                     return Move.CAPTURE
+                
         else:
             # checking regular moves
             if row - self.row == self.color.value and col == self.col:
@@ -35,6 +37,7 @@ class Pawn(Piece):
                 ):
                     return Move.PAWN_PROMOTE
                 return Move.REGULAR
+            
             elif row - self.row == self.color.value * 2 and col == self.col:
                 if (
                     self.color == Color.WHITE
@@ -43,6 +46,7 @@ class Pawn(Piece):
                     and self.row == 6
                 ):
                     return Move.REGULAR
+                
             # checking capture-en passant
             elif row - self.row == self.color.value and abs(col - self.col) == 1:
                 (
@@ -60,6 +64,7 @@ class Pawn(Piece):
                     and lastMoveStartCol == col
                 ):
                     return Move.PAWN_ENPASSANT
+                
         return Move.INVALID
 
     def move(self, board, row, col, lastMove):
@@ -117,17 +122,3 @@ class Pawn(Piece):
         # piece can get there on a blank board
         # there are no other pieces in between (unless knight)
         # check is not revealed
-
-    # Returns True if the move did not result in a promotion, False if the move results in a promotion
-    # if self.row != 1:
-    #         self.row -= 1
-    #         return True
-    # else:
-    #     return self.promote()
-
-    def capture(self, row, col):
-        pass
-
-    def promote(self):
-        self.inactive = True
-        return False
