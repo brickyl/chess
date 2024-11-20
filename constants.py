@@ -11,6 +11,7 @@ class Move(Enum):
     CAPTURE = 2
     INVALID = 3
     PAWN_PROMOTE = 4
+    PAWN_ENPASSANT = 5
 
 
 mapping = {

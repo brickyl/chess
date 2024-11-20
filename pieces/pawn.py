@@ -8,46 +8,75 @@ from constants import Color, Move
 
 class Pawn(Piece):
     def __init__(self, row, col, color):
-        self.enpassant = False
         super().__init__("P", row, col, color)
 
-    def check_move(self, board, row, col):
-
+    def check_move(self, board, row, col, lastMove):
         pieceAtDestination = board.getPieceAtLocation(row, col)
         if pieceAtDestination != None:
             if pieceAtDestination.color != self.color:
-                # checking if the pawn row is +1 and also checking if the column is +/-1
+                # checking for capture
                 if row - self.row == self.color.value and abs(col - self.col) == 1:
-                    if self.color == Color.WHITE and row == 7 or self.color == Color.BLACK and row == 0:
+                    if (
+                        self.color == Color.WHITE
+                        and row == 7
+                        or self.color == Color.BLACK
+                        and row == 0
+                    ):
                         return Move.PAWN_PROMOTE
                     return Move.CAPTURE
         else:
-            # checking if the pawn row is +1 and the column is the same
+            # checking regular moves
             if row - self.row == self.color.value and col == self.col:
-                if self.color == Color.WHITE and row == 7 or self.color == Color.BLACK and row == 0:
+                if (
+                    self.color == Color.WHITE
+                    and row == 7
+                    or self.color == Color.BLACK
+                    and row == 0
+                ):
                     return Move.PAWN_PROMOTE
                 return Move.REGULAR
             elif row - self.row == self.color.value * 2 and col == self.col:
-                if self.color == Color.WHITE and self.row == 1:
-                    print("W", str(self.row))
+                if (
+                    self.color == Color.WHITE
+                    and self.row == 1
+                    or self.color == Color.BLACK
+                    and self.row == 6
+                ):
                     return Move.REGULAR
-                if self.color == Color.BLACK and self.row == 6:
-                    print("B", str(self.row))
-                    return Move.REGULAR
+            # checking capture-en passant
+            elif row - self.row == self.color.value and abs(col - self.col) == 1:
+                (
+                    lastMovePiece,
+                    lastMoveStartRow,
+                    lastMoveStartCol,
+                    lastMoveDestRow,
+                    lastMoveDestCol,
+                ) = lastMove
+                if (
+                    type(lastMovePiece) == Pawn
+                    and lastMoveDestRow - lastMoveStartRow
+                    == 2 * lastMovePiece.color.value
+                    and lastMoveStartCol == lastMoveDestCol
+                    and lastMoveStartCol == col
+                ):
+                    return Move.PAWN_ENPASSANT
         return Move.INVALID
 
-    def move(self, board, row, col):
-        status = self.check_move(board, row, col)
+    def move(self, board, row, col, lastMove):
+        status = self.check_move(board, row, col, lastMove)
+
         if status == Move.REGULAR or status == Move.CAPTURE:
             board.setPieceAtLocation(self.row, self.col, None)
             self.row = row
             self.col = col
             board.setPieceAtLocation(row, col, self)
+
         elif status == Move.PAWN_PROMOTE:
             promotionMsg = "What would you like to promote your pawn into? The options are: Q, N, B, R."
             print(promotionMsg)
             promoPiece = input().upper()
             newPiece = None
+
             if promoPiece == "Q":
                 newPiece = Queen(row, col, self.color)
             elif promoPiece == "N":
@@ -58,8 +87,17 @@ class Pawn(Piece):
                 newPiece = Rook(row, col, self.color)
             if newPiece == None:
                 raise Exception("Invalid promotion.")
+
             board.setPieceAtLocation(self.row, self.col, None)
             board.setPieceAtLocation(row, col, newPiece)
+
+        elif status == Move.PAWN_ENPASSANT:
+            board.setPieceAtLocation(self.row, self.col, None)
+            self.row = row
+            self.col = col
+            board.setPieceAtLocation(row, col, self)
+            board.setPieceAtLocation(row - self.color.value, col, None)
+
         else:
             raise Exception("Invalid move.")
 
