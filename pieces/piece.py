@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from constants import Color
+from constants import Color, Move
 
 
 class Piece(object, metaclass=ABCMeta):
@@ -20,13 +20,17 @@ class Piece(object, metaclass=ABCMeta):
         # should also return information about capture or special moves (castle, enpassant, etc)
         pass
 
-    @abstractmethod
     def move(self, board, row, col, lastMove):
-        # conducts the move
-        # this might be the same function for all piece classes. if so, then just declare this function here.
-        # it might not be the same function if I use this function
-        # to make changes to other pieces during interactive moves (captures + special moves)
-        pass
+        status = self.check_move(board, row, col, lastMove)
+
+        if status == Move.REGULAR or status == Move.CAPTURE:
+            board.setPieceAtLocation(self.row, self.col, None)
+            self.row = row
+            self.col = col
+            board.setPieceAtLocation(row, col, self)
+
+        else:
+            raise Exception("Invalid move.")
 
     def __str__(self):
         if self.color == Color.WHITE:

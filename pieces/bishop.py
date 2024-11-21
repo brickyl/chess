@@ -7,18 +7,6 @@ class Bishop(Piece, DiagonalMove):
     def __init__(self, row, col, color):
         super().__init__("B", row, col, color)
 
-    def move(self, board, row, col, lastMove):
-        status = self.check_move(board, row, col, lastMove)
-
-        if status == Move.REGULAR or status == Move.CAPTURE:
-            board.setPieceAtLocation(self.row, self.col, None)
-            self.row = row
-            self.col = col
-            board.setPieceAtLocation(row, col, self)
-
-        else:
-            raise Exception("Invalid move.")
-
     def check_move(self, board, row, col, lastMove):
         pieceAtDestination = board.getPieceAtLocation(row, col)
 
