@@ -1,20 +1,25 @@
 from pieces.pawn import Pawn
+from pieces.bishop import Bishop
+from pieces.rook import Rook
 from constants import Color, Move
 
 
 class Board:
     def __init__(self):
         self.board = [[None for i in range(8)] for j in range(8)]
-        for i in range(8):
-            for j in range(8):
-                if i == 1:
-                    pawn = Pawn(i, j, Color.WHITE)
-                    self.board[i][j] = pawn
+        # for i in range(8):
+        #     for j in range(8):
+        #         if i == 1:
+        #             pawn = Pawn(i, j, Color.WHITE)
+        #             self.board[i][j] = pawn
 
-                if i == 6:
-                    pawn = Pawn(i, j, Color.BLACK)
-                    self.board[i][j] = pawn
-
+        #         if i == 6:
+        #             pawn = Pawn(i, j, Color.BLACK)
+        #             self.board[i][j] = pawn
+        self.board[6][4] = Rook(6, 4, Color.WHITE)
+        self.board[4][4] = Rook(4, 4, Color.WHITE)
+        self.board[3][4] = Rook(3, 4, Color.BLACK)
+        self.board[2][4] = Rook(2, 4, Color.BLACK)
         # self.pieces = []
         # self.inactivePieces = []
 
