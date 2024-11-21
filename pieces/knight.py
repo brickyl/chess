@@ -10,4 +10,4 @@ class Knight(Piece):
         return Move.INVALID
 
     def move(self, board, row, col, lastMove):
-        raise Exception("Invalid move.")
+        raise Exception("Invalid move.") 
