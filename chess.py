@@ -5,6 +5,7 @@ from utils.parsemove import parse_move
 from constants import Move, Color
 
 
+# doesn't handle invalid moves by letting you try again yet
 class Chess:
     def __init__(self):
         self.turn = 0
