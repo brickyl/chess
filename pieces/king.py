@@ -46,7 +46,7 @@ class King(Piece, StraightMove):
 
     def move(self, board, row, col, lastMove):
         status = self.check_move(board, row, col, lastMove)
-        if status != Move.QUEENSIDE_CASTLE and status != Move.KINGSIDE_CASTLE:
+        if status == Move.REGULA or status == Move.CAPTURE:
             super().move(board, row, col, lastMove)
         else:
             if status == Move.KINGSIDE_CASTLE:

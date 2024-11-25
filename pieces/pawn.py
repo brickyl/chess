@@ -71,10 +71,7 @@ class Pawn(Piece):
         status = self.check_move(board, row, col, lastMove)
 
         if status == Move.REGULAR or status == Move.CAPTURE:
-            board.setPieceAtLocation(self.row, self.col, None)
-            self.row = row
-            self.col = col
-            board.setPieceAtLocation(row, col, self)
+            super().move(board, row, col, lastMove)
 
         elif status == Move.PAWN_PROMOTE:
             promotionMsg = "What would you like to promote your pawn into? The options are: Q, N, B, R."
@@ -94,10 +91,21 @@ class Pawn(Piece):
                 raise Exception("Invalid promotion.")
 
             board.setPieceAtLocation(self.row, self.col, None)
+            potential_captured = board.getPieceAtLocation(row, col)
+            if potential_captured != None:
+                if potential_captured.color == Color.BLACK:
+                    board.black.remove(potential_captured)
+                else:
+                    board.white.remove(potential_captured)
             board.setPieceAtLocation(row, col, newPiece)
 
         elif status == Move.PAWN_ENPASSANT:
             board.setPieceAtLocation(self.row, self.col, None)
+            captured = board.getPieceAtLocation(row - self.color.value, col)
+            if captured.color == Color.BLACK:
+                board.black.remove(captured)
+            else:
+                board.white.remove(captured)
             self.row = row
             self.col = col
             board.setPieceAtLocation(row, col, self)

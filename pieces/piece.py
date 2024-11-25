@@ -23,8 +23,19 @@ class Piece(object, metaclass=ABCMeta):
     def move(self, board, row, col, lastMove):
         status = self.check_move(board, row, col, lastMove)
 
-        if status == Move.REGULAR or status == Move.CAPTURE:
+        if status == Move.REGULAR:
             board.setPieceAtLocation(self.row, self.col, None)
+            self.row = row
+            self.col = col
+            board.setPieceAtLocation(row, col, self)
+
+        elif status == Move.CAPTURE:
+            board.setPieceAtLocation(self.row, self.col, None)
+            captured = board.getPieceAtLocation(row, col)
+            if captured.color == Color.BLACK:
+                board.black.remove(captured)
+            else:
+                board.white.remove(captured)
             self.row = row
             self.col = col
             board.setPieceAtLocation(row, col, self)

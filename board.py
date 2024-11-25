@@ -10,6 +10,8 @@ from constants import Color, Move
 class Board:
     def __init__(self):
         self.board = [[None for i in range(8)] for j in range(8)]
+        self.white = []
+        self.black = []
 
         # Pawns
         for i in range(8):
@@ -17,36 +19,72 @@ class Board:
                 if i == 1:
                     pawn = Pawn(i, j, Color.WHITE)
                     self.board[i][j] = pawn
+                    self.white.append(pawn)
 
                 if i == 6:
                     pawn = Pawn(i, j, Color.BLACK)
                     self.board[i][j] = pawn
+                    self.black.append(pawn)
         
         # Queens
-        self.board[0][4] = Queen(0, 4, Color.WHITE)
-        self.board[7][4] = Queen(7, 4, Color.BLACK)
+        white_queen = Queen(0, 4, Color.WHITE)
+        black_queen = Queen(7, 4, Color.BLACK)
+        self.board[0][4] = white_queen
+        self.board[7][4] = black_queen
+        self.white.append(white_queen)
+        self.black.append(black_queen)
 
         # Kings
-        self.board[0][3] = King(0, 3, Color.WHITE)
-        self.board[7][3] = King(7, 3, Color.BLACK)
+        white_king = King(0, 3, Color.WHITE)
+        black_king = King(7, 3, Color.BLACK)
+        self.board[0][3] = white_king
+        self.board[7][3] = black_king
+        self.white.append(white_king)
+        self.black.append(black_king)
 
         # Rooks
-        self.board[0][0] = Rook(0, 0, Color.WHITE)
-        self.board[0][7] = Rook(0, 7, Color.WHITE)
-        self.board[7][0] = Rook(7, 0, Color.BLACK)
-        self.board[7][7] = Rook(7, 7, Color.BLACK)
+        white_rook_1 = Rook(0, 0, Color.WHITE)
+        white_rook_2 = Rook(0, 7, Color.WHITE)
+        black_rook_1 = Rook(7, 0, Color.BLACK)
+        black_rook_2 = Rook(7, 7, Color.BLACK)
+        self.board[0][0] = white_rook_1
+        self.board[0][7] = white_rook_2
+        self.board[7][0] = black_rook_1
+        self.board[7][7] = black_rook_2
+        self.white.append(white_rook_1)
+        self.white.append(white_rook_2)
+        self.black.append(black_rook_1)
+        self.black.append(black_rook_2)
+
 
         # Bishops
-        self.board[0][2] = Bishop(0, 2, Color.WHITE)
-        self.board[0][5] = Bishop(0, 5, Color.WHITE)
-        self.board[7][2] = Bishop(7, 2, Color.BLACK)
-        self.board[7][5] = Bishop(7, 5, Color.BLACK)
+        white_bish_1 = Bishop(0, 2, Color.WHITE)
+        white_bish_2 = Bishop(0, 5, Color.WHITE)
+        black_bish_1 = Bishop(7, 2, Color.BLACK)
+        black_bish_2 = Bishop(7, 5, Color.BLACK)
+        self.board[0][2] = white_bish_1
+        self.board[0][5] = white_bish_2
+        self.board[7][2] = black_bish_1
+        self.board[7][5] = black_bish_2
+        self.white.append(white_bish_1)
+        self.white.append(white_bish_2)
+        self.black.append(black_bish_1)
+        self.black.append(black_bish_2)
 
         # Knights 
-        self.board[0][1] = Knight(0, 1, Color.WHITE)
-        self.board[0][6] = Knight(0, 6, Color.WHITE)
-        self.board[7][1] = Knight(7, 1, Color.BLACK)
-        self.board[7][6] = Knight(7, 6, Color.BLACK)
+        white_knight_1 = Knight(0, 1, Color.WHITE)
+        white_knight_2 = Knight(0, 6, Color.WHITE)
+        black_knight_1 = Knight(7, 1, Color.BLACK)
+        black_knight_2 = Knight(7, 6, Color.BLACK)
+        self.board[0][1] = white_knight_1
+        self.board[0][6] = white_knight_2
+        self.board[7][1] = black_knight_1
+        self.board[7][6] = black_knight_2
+        self.white.append(white_knight_1)
+        self.white.append(white_knight_2)
+        self.black.append(black_knight_1)
+        self.black.append(black_knight_2)
+
 
     def printBoard(self):
         # debugging mode: the rows are 0-indexed right now
@@ -77,8 +115,8 @@ class Board:
         # PSEUDOCODE
         # For each of all the opposite color pieces, check if they can capture the king using check_move.
 
-        # black
         # white
+
         pass
 
     # each time a piece is moved, they need to call isKingInCheck AFTER THE MOVE for validity for themselves and also enemy king
