@@ -2,6 +2,8 @@ from pieces.pawn import Pawn
 from pieces.bishop import Bishop
 from pieces.rook import Rook
 from pieces.queen import Queen
+from pieces.king import King
+from pieces.knight import Knight
 from constants import Color, Move
 
 
@@ -17,10 +19,14 @@ class Board:
         #         if i == 6:
         #             pawn = Pawn(i, j, Color.BLACK)
         #             self.board[i][j] = pawn
-        self.board[6][4] = Queen(6, 4, Color.WHITE)
-        self.board[4][4] = Queen(4, 4, Color.WHITE)
-        self.board[3][4] = Queen(3, 4, Color.BLACK)
-        self.board[2][4] = Queen(2, 4, Color.BLACK)
+        # self.board[6][4] = Queen(6, 4, Color.WHITE)
+        self.board[0][3] = King(0, 3, Color.WHITE)
+        self.board[7][3] = King(7, 3, Color.BLACK)
+        self.board[0][0] = Rook(0, 0, Color.WHITE)
+        self.board[0][7] = Rook(0, 7, Color.WHITE)
+        self.board[7][0] = Rook(7, 0, Color.BLACK)
+        self.board[7][7] = Rook(7, 7, Color.BLACK)
+        # self.board[2][4] = Queen(2, 4, Color.BLACK)
         # self.pieces = []
         # self.inactivePieces = []
 
