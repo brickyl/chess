@@ -73,7 +73,7 @@ class Board:
     def setPieceAtLocation(self, row, col, piece):
         self.board[row][col] = piece
 
-    def isKingInCheck(self):
+    def checkDetect(self):
         # PSEUDOCODE
         # For each of all the opposite color pieces, check if they can capture the king using check_move.
 
