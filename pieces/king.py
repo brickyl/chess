@@ -46,6 +46,8 @@ class King(Piece, StraightMove):
         return Move.INVALID
 
     def move(self, board, row, col, lastMove):
+        board.reverse_add_pieces = []
+        board.reverse_rem_pieces = []
         status = self.check_move(board, row, col, lastMove)
         if status == Move.REGULAR or status == Move.CAPTURE:
             super().move(board, row, col, lastMove)

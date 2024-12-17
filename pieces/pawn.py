@@ -26,7 +26,7 @@ class Pawn(Piece):
                     ):
                         return Move.PAWN_PROMOTE
                     return Move.CAPTURE
-                
+
         else:
             # checking regular moves
             if row - self.row == self.color.value and col == self.col:
@@ -38,7 +38,7 @@ class Pawn(Piece):
                 ):
                     return Move.PAWN_PROMOTE
                 return Move.REGULAR
-            
+
             elif row - self.row == self.color.value * 2 and col == self.col:
                 if (
                     self.color == Color.WHITE
@@ -47,7 +47,7 @@ class Pawn(Piece):
                     and self.row == 6
                 ):
                     return Move.REGULAR
-                
+
             # checking capture-en passant
             elif row - self.row == self.color.value and abs(col - self.col) == 1:
                 (
@@ -65,10 +65,12 @@ class Pawn(Piece):
                     and lastMoveStartCol == col
                 ):
                     return Move.PAWN_ENPASSANT
-                
+
         return Move.INVALID
 
     def move(self, board, row, col, lastMove):
+        board.reverse_add_pieces = []
+        board.reverse_rem_pieces = []
         status = self.check_move(board, row, col, lastMove)
 
         if status == Move.REGULAR or status == Move.CAPTURE:

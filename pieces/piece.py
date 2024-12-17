@@ -13,7 +13,7 @@ class Piece(object, metaclass=ABCMeta):
         self.color = color
         if color == Color.WHITE:
             board.white.append(self)
-        else: 
+        else:
             board.black.append(self)
         board.board[row][col] = self
         # self.abbreviation = None
@@ -27,6 +27,8 @@ class Piece(object, metaclass=ABCMeta):
         pass
 
     def move(self, board, row, col, lastMove):
+        board.reverse_add_pieces = []
+        board.reverse_rem_pieces = []
         status = self.check_move(board, row, col, lastMove)
 
         if status == Move.REGULAR:
