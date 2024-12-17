@@ -2,12 +2,13 @@ from pieces.piece import Piece
 from pieces.rook import Rook
 from straightmove import StraightMove
 from constants import Color, Move
+from utils import handle_piece
 
 
 class King(Piece, StraightMove):
-    def __init__(self, row, col, color):
+    def __init__(self, row, col, color, board):
         self.hasMoved = False
-        super().__init__("K", row, col, color)
+        super().__init__("K", row, col, color, board)
 
     def check_move(self, board, row, col, lastMove):
         if abs(self.row - row) <= 1 and abs(self.col - col) <= 1:
@@ -46,20 +47,14 @@ class King(Piece, StraightMove):
 
     def move(self, board, row, col, lastMove):
         status = self.check_move(board, row, col, lastMove)
-        if status == Move.REGULA or status == Move.CAPTURE:
+        if status == Move.REGULAR or status == Move.CAPTURE:
             super().move(board, row, col, lastMove)
         else:
             if status == Move.KINGSIDE_CASTLE:
                 hRook = board.getPieceAtLocation(row, 0)
-                board.setPieceAtLocation(row, hRook.col, None)
-                hRook.col = col + 1
-                board.setPieceAtLocation(row, hRook.col, hRook)
+                handle_piece.transport(board, hRook, row, hRook.col + 1)
+
             else:
                 aRook = board.getPieceAtLocation(row, 7)
-                board.setPieceAtLocation(row, aRook.col, None)
-                aRook.col = col - 1
-                board.setPieceAtLocation(row, aRook.col, aRook)
-            board.setPieceAtLocation(self.row, self.col, None)
-            self.row = row
-            self.col = col
-            board.setPieceAtLocation(self.row, self.col, self)
+                handle_piece.transport(board, aRook, row, aRook.col + 1)
+            handle_piece.transport(board, self, row, col)

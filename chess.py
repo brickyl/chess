@@ -27,9 +27,7 @@ class Chess:
             move = input()
             parsedMove = parse_move(move)
             startRowCol, endRowCol = parsedMove
-            # endRowCol = parsedMove[1]
 
-            # Now figure out what to do with endPos
             piece = self.board.getPieceAtLocation(*startRowCol)
             if piece == None:
                 print("No starting piece found.")
@@ -39,10 +37,6 @@ class Chess:
                 return
             piece.move(self.board, *endRowCol, self.lastMove)
             self.lastMove = (piece, *startRowCol, *endRowCol)
-
-            # now figure out if the new destination is a location that the piece can get to
-            # if so, classify the type of move, and any resulting actions
-            # piece.tryMove(pieceAtDestination.row, pieceAtDestination.col) --> returns success or fail, and type of move
 
             if self.player == Color.BLACK:
                 self.player = Color.WHITE

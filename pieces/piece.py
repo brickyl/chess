@@ -1,15 +1,21 @@
 from abc import ABCMeta, abstractmethod
 from constants import Color, Move
+from utils import handle_piece
 
 
 class Piece(object, metaclass=ABCMeta):
     @abstractmethod
-    def __init__(self, name, row, col, color):
+    def __init__(self, name, row, col, color, board):
         # self.color = None
         self.row = row  # ranks
         self.col = col  # files
         self.name = name
         self.color = color
+        if color == Color.WHITE:
+            board.white.append(self)
+        else: 
+            board.black.append(self)
+        board.board[row][col] = self
         # self.abbreviation = None
         # self.startPosition = None
 
@@ -24,21 +30,12 @@ class Piece(object, metaclass=ABCMeta):
         status = self.check_move(board, row, col, lastMove)
 
         if status == Move.REGULAR:
-            board.setPieceAtLocation(self.row, self.col, None)
-            self.row = row
-            self.col = col
-            board.setPieceAtLocation(row, col, self)
+            handle_piece.transport(board, self, row, col)
 
         elif status == Move.CAPTURE:
-            board.setPieceAtLocation(self.row, self.col, None)
             captured = board.getPieceAtLocation(row, col)
-            if captured.color == Color.BLACK:
-                board.black.remove(captured)
-            else:
-                board.white.remove(captured)
-            self.row = row
-            self.col = col
-            board.setPieceAtLocation(row, col, self)
+            handle_piece.pieceRemoval(board, captured)
+            handle_piece.transport(board, self, row, col)
 
         else:
             raise Exception("Invalid move.")

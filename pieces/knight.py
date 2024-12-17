@@ -3,8 +3,8 @@ from constants import Color, Move
 
 
 class Knight(Piece):
-    def __init__(self, row, col, color):
-        super().__init__("N", row, col, color)
+    def __init__(self, row, col, color, board):
+        super().__init__("N", row, col, color, board)
 
     def check_move(self, board, row, col, lastMove):
         pieceAtDest = board.getPieceAtLocation(row, col)

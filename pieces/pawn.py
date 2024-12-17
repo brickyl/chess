@@ -4,11 +4,12 @@ from pieces.knight import Knight
 from pieces.bishop import Bishop
 from pieces.rook import Rook
 from constants import Color, Move
+from utils import handle_piece
 
 
 class Pawn(Piece):
-    def __init__(self, row, col, color):
-        super().__init__("P", row, col, color)
+    def __init__(self, row, col, color, board):
+        super().__init__("P", row, col, color, board)
 
     def check_move(self, board, row, col, lastMove):
         pieceAtDestination = board.getPieceAtLocation(row, col)
@@ -79,37 +80,26 @@ class Pawn(Piece):
             promoPiece = input().upper()
             newPiece = None
 
-            if promoPiece == "Q":
-                newPiece = Queen(row, col, self.color)
-            elif promoPiece == "N":
-                newPiece = Knight(row, col, self.color)
-            elif promoPiece == "B":
-                newPiece = Bishop(row, col, self.color)
-            elif promoPiece == "R":
-                newPiece = Rook(row, col, self.color)
-            if newPiece == None:
-                raise Exception("Invalid promotion.")
+            match promoPiece:
+                case "Q":
+                    newPiece = Queen(row, col, self.color, board)
+                case "N":
+                    newPiece = Knight(row, col, self.color, board)
+                case "Q":
+                    newPiece = Bishop(row, col, self.color, board)
+                case "R":
+                    newPiece = Rook(row, col, self.color, board)
+                case _:
+                    raise Exception("Invalid promotion.")
 
-            board.setPieceAtLocation(self.row, self.col, None)
             potential_captured = board.getPieceAtLocation(row, col)
             if potential_captured != None:
-                if potential_captured.color == Color.BLACK:
-                    board.black.remove(potential_captured)
-                else:
-                    board.white.remove(potential_captured)
-            board.setPieceAtLocation(row, col, newPiece)
+                handle_piece.pieceRemoval(board, potential_captured)
 
         elif status == Move.PAWN_ENPASSANT:
-            board.setPieceAtLocation(self.row, self.col, None)
             captured = board.getPieceAtLocation(row - self.color.value, col)
-            if captured.color == Color.BLACK:
-                board.black.remove(captured)
-            else:
-                board.white.remove(captured)
-            self.row = row
-            self.col = col
-            board.setPieceAtLocation(row, col, self)
-            board.setPieceAtLocation(row - self.color.value, col, None)
+            handle_piece.pieceRemoval(board, captured)
+            handle_piece.transport(board, self, row, col)
 
         else:
             raise Exception("Invalid move.")

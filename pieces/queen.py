@@ -5,8 +5,8 @@ from constants import Color, Move
 
 
 class Queen(Piece, DiagonalMove, StraightMove):
-    def __init__(self, row, col, color):
-        super().__init__("Q", row, col, color)
+    def __init__(self, row, col, color, board):
+        super().__init__("Q", row, col, color, board)
 
     def check_move(self, board, row, col, lastMove):
         pieceAtDestination = board.getPieceAtLocation(row, col)

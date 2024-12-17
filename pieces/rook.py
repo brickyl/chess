@@ -4,9 +4,9 @@ from constants import Color, Move
 
 
 class Rook(Piece, StraightMove):
-    def __init__(self, row, col, color):
+    def __init__(self, row, col, color, board):
         self.hasMoved = False
-        super().__init__("R", row, col, color)
+        super().__init__("R", row, col, color, board)
 
     def check_move(self, board, row, col, lastMove):
         pieceAtDestination = board.getPieceAtLocation(row, col)
