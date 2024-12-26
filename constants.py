@@ -15,6 +15,12 @@ class Move(Enum):
     KINGSIDE_CASTLE = 6
     QUEENSIDE_CASTLE = 7
 
+class INPUT_STATUS(Enum):
+    # FORMAT_CORRECT = 0
+    FORMAT_INCORRECT = 1
+    QUIT = 2
+    UNDO = 3
+
 
 mapping = {
     "h": 0,

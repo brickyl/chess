@@ -4,7 +4,6 @@ from pieces.knight import Knight
 from pieces.bishop import Bishop
 from pieces.rook import Rook
 from constants import Color, Move
-from utils import handle_piece
 
 
 class Pawn(Piece):
@@ -69,42 +68,49 @@ class Pawn(Piece):
         return Move.INVALID
 
     def move(self, board, row, col, lastMove):
-        board.reverse_add_pieces = []
-        board.reverse_rem_pieces = []
         status = self.check_move(board, row, col, lastMove)
 
         if status == Move.REGULAR or status == Move.CAPTURE:
-            super().move(board, row, col, lastMove)
+            return super().move(board, row, col, lastMove)
 
         elif status == Move.PAWN_PROMOTE:
-            promotionMsg = "What would you like to promote your pawn into? The options are: Q, N, B, R."
+            oldRow, oldCol = self.row, self.col
+
+            promotionMsg = "[chess] What would you like to promote your pawn into? The options are: Q, N, B, R."
             print(promotionMsg)
             promoPiece = input().upper()
-            newPiece = None
-
-            match promoPiece:
-                case "Q":
-                    newPiece = Queen(row, col, self.color, board)
-                case "N":
-                    newPiece = Knight(row, col, self.color, board)
-                case "Q":
-                    newPiece = Bishop(row, col, self.color, board)
-                case "R":
-                    newPiece = Rook(row, col, self.color, board)
-                case _:
-                    raise Exception("Invalid promotion.")
 
             potential_captured = board.getPieceAtLocation(row, col)
             if potential_captured != None:
-                handle_piece.pieceRemoval(board, potential_captured)
+                board.pieceRemoval(potential_captured)
+
+            board.transport(self, row, col)
+            board.pieceRemoval(self)
+
+            match promoPiece:
+                case "Q":
+                    promoPiece = Queen(row, col, self.color, board)
+                case "N":
+                    promoPiece = Knight(row, col, self.color, board)
+                case "B":
+                    promoPiece = Bishop(row, col, self.color, board)
+                case "R":
+                    promoPiece = Rook(row, col, self.color, board)
+                case _:
+                    print("[chess] Bad promotion.")
+                    return None
+            # this function needs to handle the old pawn and new piece properly
+            return (promoPiece, oldRow, oldCol, status, (potential_captured, self))
 
         elif status == Move.PAWN_ENPASSANT:
+            oldRow, oldCol = self.row, self.col
             captured = board.getPieceAtLocation(row - self.color.value, col)
-            handle_piece.pieceRemoval(board, captured)
-            handle_piece.transport(board, self, row, col)
+            board.pieceRemoval(captured)
+            board.transport(self, row, col)
+            return (self, oldRow, oldCol, status, captured)
 
         else:
-            raise Exception("Invalid move.")
+            return None
 
         # check if there's a piece there
         # [CAPTURE]

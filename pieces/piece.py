@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from constants import Color, Move
-from utils import handle_piece
+# from utils import handle_piece # this needs to be reassigned to board
 
 
 class Piece(object, metaclass=ABCMeta):
@@ -16,8 +16,6 @@ class Piece(object, metaclass=ABCMeta):
         else:
             board.black.append(self)
         board.board[row][col] = self
-        # self.abbreviation = None
-        # self.startPosition = None
 
     @abstractmethod
     def check_move(self, board, row, col, lastMove):
@@ -27,20 +25,22 @@ class Piece(object, metaclass=ABCMeta):
         pass
 
     def move(self, board, row, col, lastMove):
-        board.reverse_add_pieces = []
-        board.reverse_rem_pieces = []
+        # returns piece, oldrow, oldcol, newrow, newcol, status, special pieces to be reinstated
         status = self.check_move(board, row, col, lastMove)
+        if status == Move.INVALID:
+            return None
 
+        oldRow, oldCol = self.row, self.col
         if status == Move.REGULAR:
-            handle_piece.transport(board, self, row, col)
+            board.transport(self, row, col)
+            return (self, oldRow, oldCol, status, None)
 
         elif status == Move.CAPTURE:
             captured = board.getPieceAtLocation(row, col)
-            handle_piece.pieceRemoval(board, captured)
-            handle_piece.transport(board, self, row, col)
-
-        else:
-            raise Exception("Invalid move.")
+            board.pieceRemoval(captured)
+            board.transport(self, row, col)
+            return (self, oldRow, oldCol, status, captured)
+            
 
     def __str__(self):
         if self.color == Color.WHITE:

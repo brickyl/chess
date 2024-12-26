@@ -14,46 +14,44 @@ class Board:
         self.black = []
         self.white_king = King(0, 3, Color.WHITE, self)
         self.black_king = King(7, 3, Color.BLACK, self)
-        self.reverse_add_pieces = [] # holds sequence of pieces to be placed on the board
-        self.reverse_rem_pieces = [] # holds sequence of pieces to be removed from the board --> do I need to find equality
-
 
         # Pawns
         for i in range(8):
             for j in range(8):
                 if i == 1:
-                    pawn = Pawn(i, j, Color.WHITE, self)
+                    Pawn(i, j, Color.WHITE, self)
 
                 if i == 6:
-                    pawn = Pawn(i, j, Color.BLACK, self)
+                    Pawn(i, j, Color.BLACK, self)
 
         # Queens
-        white_queen = Queen(0, 4, Color.WHITE, self)
-        black_queen = Queen(7, 4, Color.BLACK, self)
+        Queen(0, 4, Color.WHITE, self)
+        Queen(7, 4, Color.BLACK, self)
 
         # Rooks
-        white_rook_1 = Rook(0, 0, Color.WHITE, self)
-        white_rook_2 = Rook(0, 7, Color.WHITE, self)
-        black_rook_1 = Rook(7, 0, Color.BLACK, self)
-        black_rook_2 = Rook(7, 7, Color.BLACK, self)
+        Rook(0, 0, Color.WHITE, self)
+        Rook(0, 7, Color.WHITE, self)
+        Rook(7, 0, Color.BLACK, self)
+        Rook(7, 7, Color.BLACK, self)
 
         # Bishops
-        white_bish_1 = Bishop(0, 2, Color.WHITE, self)
-        white_bish_2 = Bishop(0, 5, Color.WHITE, self)
-        black_bish_1 = Bishop(7, 2, Color.BLACK, self)
-        black_bish_2 = Bishop(7, 5, Color.BLACK, self)
+        Bishop(0, 2, Color.WHITE, self)
+        Bishop(0, 5, Color.WHITE, self)
+        Bishop(7, 2, Color.BLACK, self)
+        Bishop(7, 5, Color.BLACK, self)
 
         # Knights
-        white_knight_1 = Knight(0, 1, Color.WHITE, self)
-        white_knight_2 = Knight(0, 6, Color.WHITE, self)
-        black_knight_1 = Knight(7, 1, Color.BLACK, self)
-        black_knight_2 = Knight(7, 6, Color.BLACK, self)
+        Knight(0, 1, Color.WHITE, self)
+        Knight(0, 6, Color.WHITE, self)
+        Knight(7, 1, Color.BLACK, self)
+        Knight(7, 6, Color.BLACK, self)
 
     def printBoard(self):
         # debugging mode: the rows are 0-indexed right now
         print()
+        print("[chess] --- Board ---")
         for i in range(len(self.board)):
-            line = str(i + 1) + "  "
+            line = "  " + str(i + 1) + "  "
             for j in range(len(self.board[0])):
                 piece = self.board[i][j]
                 if piece == None:
@@ -64,7 +62,7 @@ class Board:
                     line += " "
             print(line)
         print()
-        print("   h g f e d c b a")
+        print("     h g f e d c b a")
         print()
 
     def getPieceAtLocation(self, row, col):
@@ -88,10 +86,35 @@ class Board:
         
         return None
     
-    # if you are in check, you must get out of check
-    # you cannot make a move that puts you or leaves you in check (same thing)
-    # how to validate a move without making it??? -- my current approach: you do make it. you just reverse it
-    # reverse move
+    def pieceRemoval(self, piece):
+        # function to remove a piece from a board using row and col
+        self.setPieceAtLocation(piece.row, piece.col, None)
+        if piece.color == Color.WHITE:
+            self.white.remove(piece)
+        else:
+            self.black.remove(piece)
+
+    def pieceRestore(self, piece):
+        if piece in self.white or piece in self.black:
+            raise Exception("Tried to restore active piece.")
+        
+        self.setPieceAtLocation(piece.row, piece.col, piece)
+        if piece.color == Color.WHITE:
+            self.white.append(piece)
+        else:
+            self.black.append(piece)
+
+    def transport(self, piece, newRow, newCol):
+        self.setPieceAtLocation(piece.row, piece.col, None)
+        self.setPieceAtLocation(newRow, newCol, piece)
+        piece.row = newRow
+        piece.col = newCol
+            
+    # check detection 
+    # rule 1: if you are in check, you must get out of check
+    # rule 2: you cannot make a move that puts you or leaves you in check (same thing)
+    # how to validate a move without making it??? -- my current approach: you do make it. you just reverse it...
+    # reverse move <-- two separate versions of this? reversing move(s) that actually happen vs. validating moves with one reversal if fail
 
     # checkmate detection(?)
     # checkmate is when no matter what move you make, your king will get gobbled up nom nom
@@ -102,5 +125,11 @@ class Board:
     # each time a piece is moved, they need to call checkDetect AFTER THE MOVE for validity for themselves and also enemy king
     # if causing self check, invalidate the move... by reversing it?
     # if causing enemy king check, then set enemy king check status to true
+
+    # IMMEDIATE TODOS
+    # implement reverse_move 
+    # get rid of last_move
+    # then maybe finally i will be ready for check detection and validating moves so that they don't do check
+
 
 

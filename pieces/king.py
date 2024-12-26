@@ -2,7 +2,6 @@ from pieces.piece import Piece
 from pieces.rook import Rook
 from straightmove import StraightMove
 from constants import Color, Move
-from utils import handle_piece
 
 
 class King(Piece, StraightMove):
@@ -46,17 +45,21 @@ class King(Piece, StraightMove):
         return Move.INVALID
 
     def move(self, board, row, col, lastMove):
-        board.reverse_add_pieces = []
-        board.reverse_rem_pieces = []
         status = self.check_move(board, row, col, lastMove)
         if status == Move.REGULAR or status == Move.CAPTURE:
-            super().move(board, row, col, lastMove)
+            return super().move(board, row, col, lastMove) 
         else:
+            oldRow, oldCol = self.row, self.col
+
             if status == Move.KINGSIDE_CASTLE:
-                hRook = board.getPieceAtLocation(row, 0)
-                handle_piece.transport(board, hRook, row, hRook.col + 1)
+                rook = board.getPieceAtLocation(row, 0)
+                oldRookRow, oldRookCol = rook.row, rook.col
+                board.transport(rook, row, rook.col + 2)
 
             else:
-                aRook = board.getPieceAtLocation(row, 7)
-                handle_piece.transport(board, aRook, row, aRook.col + 1)
-            handle_piece.transport(board, self, row, col)
+                rook = board.getPieceAtLocation(row, 7)
+                oldRookRow, oldRookCol = rook.row, rook.col # what if rook is None?
+                board.transport(rook, row, rook.col - 3)
+            
+            board.transport(self, row, col)
+            return (self, oldRow, oldCol, status, (rook, oldRookRow, oldRookCol))
