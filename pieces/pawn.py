@@ -10,7 +10,7 @@ class Pawn(Piece):
     def __init__(self, row, col, color, board):
         super().__init__("P", row, col, color, board)
 
-    def check_move(self, board, row, col, lastMove):
+    def check_move(self, board, row, col, moves):
         pieceAtDestination = board.getPieceAtLocation(row, col)
 
         if pieceAtDestination != None:
@@ -48,14 +48,14 @@ class Pawn(Piece):
                     return Move.REGULAR
 
             # checking capture-en passant
-            elif row - self.row == self.color.value and abs(col - self.col) == 1:
+            elif row - self.row == self.color.value and abs(col - self.col) == 1 and len(moves) > 0:
                 (
                     lastMovePiece,
                     lastMoveStartRow,
                     lastMoveStartCol,
-                    lastMoveDestRow,
-                    lastMoveDestCol,
-                ) = lastMove
+                    _
+                ) = moves[-1]
+                lastMoveDestRow, lastMoveDestCol = lastMovePiece.row, lastMovePiece.col
                 if (
                     type(lastMovePiece) == Pawn
                     and lastMoveDestRow - lastMoveStartRow
@@ -67,11 +67,11 @@ class Pawn(Piece):
 
         return Move.INVALID
 
-    def move(self, board, row, col, lastMove):
-        status = self.check_move(board, row, col, lastMove)
+    def move(self, board, row, col, moves):
+        status = self.check_move(board, row, col, moves)
 
         if status == Move.REGULAR or status == Move.CAPTURE:
-            return super().move(board, row, col, lastMove)
+            return super().move(board, row, col, moves)
 
         elif status == Move.PAWN_PROMOTE:
             oldRow, oldCol = self.row, self.col

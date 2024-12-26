@@ -6,7 +6,7 @@ class Knight(Piece):
     def __init__(self, row, col, color, board):
         super().__init__("N", row, col, color, board)
 
-    def check_move(self, board, row, col, lastMove):
+    def check_move(self, board, row, col, _):
         pieceAtDest = board.getPieceAtLocation(row, col)
         if pieceAtDest != None and pieceAtDest.color != self.color:
             if abs(self.col - col) == 2 and abs(self.row - row) == 1:

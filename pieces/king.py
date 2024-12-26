@@ -9,7 +9,7 @@ class King(Piece, StraightMove):
         self.hasMoved = False
         super().__init__("K", row, col, color, board)
 
-    def check_move(self, board, row, col, lastMove):
+    def check_move(self, board, row, col, moves):
         if abs(self.row - row) <= 1 and abs(self.col - col) <= 1:
             pieceAtDest = board.getPieceAtLocation(row, col)
             if pieceAtDest != None and pieceAtDest.color != self.color:
@@ -44,10 +44,10 @@ class King(Piece, StraightMove):
 
         return Move.INVALID
 
-    def move(self, board, row, col, lastMove):
-        status = self.check_move(board, row, col, lastMove)
+    def move(self, board, row, col, moves):
+        status = self.check_move(board, row, col, moves)
         if status == Move.REGULAR or status == Move.CAPTURE:
-            return super().move(board, row, col, lastMove) 
+            return super().move(board, row, col, moves) 
         else:
             oldRow, oldCol = self.row, self.col
 

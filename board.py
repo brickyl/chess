@@ -127,7 +127,6 @@ class Board:
     # if causing enemy king check, then set enemy king check status to true
 
     # IMMEDIATE TODOS
-    # implement reverse_move 
     # get rid of last_move
     # then maybe finally i will be ready for check detection and validating moves so that they don't do check
 

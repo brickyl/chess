@@ -8,7 +8,7 @@ class Rook(Piece, StraightMove):
         self.hasMoved = False
         super().__init__("R", row, col, color, board)
 
-    def check_move(self, board, row, col, lastMove):
+    def check_move(self, board, row, col, _):
         pieceAtDestination = board.getPieceAtLocation(row, col)
 
         if pieceAtDestination != None and pieceAtDestination.color != self.color:

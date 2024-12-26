@@ -18,15 +18,15 @@ class Piece(object, metaclass=ABCMeta):
         board.board[row][col] = self
 
     @abstractmethod
-    def check_move(self, board, row, col, lastMove):
+    def check_move(self, board, row, col, moves):
         # returns enum that represents move status
         # returns Move.INVALID if unsuccessful
         # should also return information about capture or special moves (castle, enpassant, etc)
         pass
 
-    def move(self, board, row, col, lastMove):
+    def move(self, board, row, col, moves):
         # returns piece, oldrow, oldcol, newrow, newcol, status, special pieces to be reinstated
-        status = self.check_move(board, row, col, lastMove)
+        status = self.check_move(board, row, col, moves)
         if status == Move.INVALID:
             return None
 
