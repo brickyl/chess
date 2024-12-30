@@ -66,12 +66,10 @@ class Pawn(Piece):
                     return Move.PAWN_ENPASSANT
 
         return Move.INVALID
-
-    def move(self, board, row, col, moves):
-        status = self.check_move(board, row, col, moves)
-
+    
+    def try_move(self, status, board, row, col, moves):
         if status == Move.REGULAR or status == Move.CAPTURE:
-            return super().move(board, row, col, moves)
+            return super().try_move(status, board, row, col, moves)
 
         elif status == Move.PAWN_PROMOTE:
             oldRow, oldCol = self.row, self.col
@@ -111,6 +109,8 @@ class Pawn(Piece):
 
         else:
             return None
+    
+
 
         # check if there's a piece there
         # [CAPTURE]

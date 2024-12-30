@@ -1,9 +1,8 @@
 from board import Board
-from pieces.pawn import Pawn
-from utils.notation import decodeChessNotation, encodeRowColNotation
+# from utils.notation import decodeChessNotation, encodeRowColNotation
 from utils.parsemove import parse_input
-from utils.move_logging import log_move
-from constants import Move, Color, INPUT_STATUS
+
+from constants import Color, INPUT_STATUS
 
 
 class Chess:
@@ -28,6 +27,7 @@ class Chess:
                 "'!",
                 sep="",
             )
+            
             move = input()
             parsedInput = parse_input(move)
             if parsedInput == INPUT_STATUS.FORMAT_INCORRECT:
@@ -53,11 +53,11 @@ class Chess:
             elif piece.color != player:
                 print("[chess] Not your piece. Try again.")
                 continue
-            move_result = piece.move(self.board, *endRowCol, self.moves)
-            if move_result == None:
+
+            move_success = piece.move(self.board, *endRowCol, self.moves)
+            if move_success == False:
                 print("[chess] Illegal move made. Try again.")
                 continue
-            log_move(*move_result, self.moves)
 
         print("[chess] ------ Game over! ------")
         self.board.printBoard()
@@ -75,35 +75,7 @@ class Chess:
         # else:
         #     return Color.WHITE
 
-    def reverse_move(self):
-        if len(self.moves) == 0:
-            return False
-        else:
-            last_move = self.moves.pop()
-            piece, startRow, startCol, status, special = last_move
-            self.board.transport(piece, startRow, startCol)
-            match status:
 
-                case Move.CAPTURE | Move.PAWN_ENPASSANT:
-                    self.board.pieceRestore(special)
-
-                case Move.PAWN_PROMOTE:
-                    potential_captured, old_pawn = special
-
-                    self.board.pieceRemoval(piece)
-                    self.board.pieceRestore(old_pawn)
-                    self.board.transport(old_pawn, startRow, startCol)
-                    if potential_captured != None:
-                        self.board.pieceRestore(potential_captured)
-
-                case Move.KINGSIDE_CASTLE | Move.QUEENSIDE_CASTLE:
-                    rook, oldRow, oldCol = special
-                    self.board.transport(rook, oldRow, oldCol)
-                    piece.hasMoved = False
-                    rook.hasMoved = False
-            print(piece.row, piece.col)
-
-            return True
 
             # case on status.
             # if regular, just move the piece

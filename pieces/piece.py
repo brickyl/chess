@@ -1,7 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from constants import Color, Move
-# from utils import handle_piece # this needs to be reassigned to board
-
+from utils.move_logging import log_move, reverse_move
 
 class Piece(object, metaclass=ABCMeta):
     @abstractmethod
@@ -24,9 +23,7 @@ class Piece(object, metaclass=ABCMeta):
         # should also return information about capture or special moves (castle, enpassant, etc)
         pass
 
-    def move(self, board, row, col, moves):
-        # returns piece, oldrow, oldcol, newrow, newcol, status, special pieces to be reinstated
-        status = self.check_move(board, row, col, moves)
+    def try_move(self, status, board, row, col, moves):
         if status == Move.INVALID:
             return None
 
@@ -40,7 +37,22 @@ class Piece(object, metaclass=ABCMeta):
             board.pieceRemoval(captured)
             board.transport(self, row, col)
             return (self, oldRow, oldCol, status, captured)
-            
+
+    def move(self, board, row, col, moves):
+        status = self.check_move(board, row, col, moves)
+
+        move_result = self.try_move(status, board, row, col, moves)
+        if move_result == None:
+            return False
+
+        log_move(*move_result, moves)
+        if board.checkDetect() == self.color:
+            reverse_move(board, moves)
+            print("[chess] Cannot stay in check.")
+            return False
+        else:
+            return True
+
 
     def __str__(self):
         if self.color == Color.WHITE:

@@ -51,7 +51,7 @@ class Board:
         print()
         print("[chess] --- Board ---")
         for i in range(len(self.board)):
-            line = "  " + str(i + 1) + "  "
+            line = "    " + str(i + 1) + "  "
             for j in range(len(self.board[0])):
                 piece = self.board[i][j]
                 if piece == None:
@@ -62,7 +62,7 @@ class Board:
                     line += " "
             print(line)
         print()
-        print("     h g f e d c b a")
+        print("       h g f e d c b a")
         print()
 
     def getPieceAtLocation(self, row, col):
@@ -77,11 +77,11 @@ class Board:
         # that the king is on, plus knights of the opposite color. only check until you run
         # into a piece (only knight can jump).
         for piece in self.black:
-            if piece.check_move(self, self.white_king.row, self.white_king.col, None):
+            if piece.check_move(self, self.white_king.row, self.white_king.col, None) != Move.INVALID:
                 return Color.WHITE
             
         for piece in self.white:
-            if piece.check_move(self, self.black_king.row, self.black_king.col, None):
+            if piece.check_move(self, self.black_king.row, self.black_king.col, None) != Move.INVALID:
                 return Color.BLACK
         
         return None
@@ -116,6 +116,9 @@ class Board:
     # how to validate a move without making it??? -- my current approach: you do make it. you just reverse it...
     # reverse move <-- two separate versions of this? reversing move(s) that actually happen vs. validating moves with one reversal if fail
 
+    # need to write a function to force push the changes to the board to the move_log and then reverse it
+    # basically, i want to make the move anyway and then reverse it. maybe I ought to do it AFTER the move instead of in the move
+
     # checkmate detection(?)
     # checkmate is when no matter what move you make, your king will get gobbled up nom nom
     # checkmate also occurs when you cannot make any valid moves while being in check <-- stop counting as soon as there's 1 valid move
@@ -125,10 +128,5 @@ class Board:
     # each time a piece is moved, they need to call checkDetect AFTER THE MOVE for validity for themselves and also enemy king
     # if causing self check, invalidate the move... by reversing it?
     # if causing enemy king check, then set enemy king check status to true
-
-    # IMMEDIATE TODOS
-    # get rid of last_move
-    # then maybe finally i will be ready for check detection and validating moves so that they don't do check
-
 
 

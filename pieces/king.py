@@ -9,7 +9,7 @@ class King(Piece, StraightMove):
         self.hasMoved = False
         super().__init__("K", row, col, color, board)
 
-    def check_move(self, board, row, col, moves):
+    def check_move(self, board, row, col, _):
         if abs(self.row - row) <= 1 and abs(self.col - col) <= 1:
             pieceAtDest = board.getPieceAtLocation(row, col)
             if pieceAtDest != None and pieceAtDest.color != self.color:
@@ -28,6 +28,7 @@ class King(Piece, StraightMove):
                 and self.straight_clear_path(board, row, 0)
                 and type(potentialRookKingside) == Rook
                 and potentialRookKingside.hasMoved == False
+                and board.checkDetect() != self.color
             ):
                 potentialRookKingside.hasMoved = True
                 self.hasMoved = True
@@ -37,15 +38,15 @@ class King(Piece, StraightMove):
                 and self.straight_clear_path(board, row, 7)
                 and type(potentialRookQueenside) == Rook
                 and potentialRookQueenside.hasMoved == False
+                and board.checkDetect() != self.color
             ):
                 potentialRookQueenside.hasMoved = True
                 self.hasMoved = True
                 return Move.QUEENSIDE_CASTLE
 
         return Move.INVALID
-
-    def move(self, board, row, col, moves):
-        status = self.check_move(board, row, col, moves)
+    
+    def try_move(self, status, board, row, col, moves):
         if status == Move.REGULAR or status == Move.CAPTURE:
             return super().move(board, row, col, moves) 
         else:
@@ -58,7 +59,7 @@ class King(Piece, StraightMove):
 
             else:
                 rook = board.getPieceAtLocation(row, 7)
-                oldRookRow, oldRookCol = rook.row, rook.col # what if rook is None?
+                oldRookRow, oldRookCol = rook.row, rook.col
                 board.transport(rook, row, rook.col - 3)
             
             board.transport(self, row, col)
