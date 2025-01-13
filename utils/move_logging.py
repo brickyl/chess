@@ -32,6 +32,5 @@ def reverse_move(board, moves):
                 board.transport(rook, oldRow, oldCol)
                 piece.hasMoved = False
                 rook.hasMoved = False
-        print(piece.row, piece.col)
 
         return True

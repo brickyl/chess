@@ -48,13 +48,12 @@ class Pawn(Piece):
                     return Move.REGULAR
 
             # checking capture-en passant
-            elif row - self.row == self.color.value and abs(col - self.col) == 1 and len(moves) > 0:
-                (
-                    lastMovePiece,
-                    lastMoveStartRow,
-                    lastMoveStartCol,
-                    _
-                ) = moves[-1]
+            elif (
+                row - self.row == self.color.value
+                and abs(col - self.col) == 1
+                and len(moves) > 0
+            ):
+                (lastMovePiece, lastMoveStartRow, lastMoveStartCol, _) = moves[-1]
                 lastMoveDestRow, lastMoveDestCol = lastMovePiece.row, lastMovePiece.col
                 if (
                     type(lastMovePiece) == Pawn
@@ -66,7 +65,7 @@ class Pawn(Piece):
                     return Move.PAWN_ENPASSANT
 
         return Move.INVALID
-    
+
     def try_move(self, status, board, row, col, moves):
         if status == Move.REGULAR or status == Move.CAPTURE:
             return super().try_move(status, board, row, col, moves)
@@ -109,8 +108,6 @@ class Pawn(Piece):
 
         else:
             return None
-    
-
 
         # check if there's a piece there
         # [CAPTURE]

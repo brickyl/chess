@@ -1,6 +1,8 @@
 from board import Board
+
 # from utils.notation import decodeChessNotation, encodeRowColNotation
 from utils.parsemove import parse_input
+from utils.move_logging import reverse_move
 
 from constants import Color, INPUT_STATUS
 
@@ -27,7 +29,9 @@ class Chess:
                 "'!",
                 sep="",
             )
-            
+            total_moves = self.board.countMoves(self.moves)
+            print("[chess] Total available moves: " + str(total_moves))
+
             move = input()
             parsedInput = parse_input(move)
             if parsedInput == INPUT_STATUS.FORMAT_INCORRECT:
@@ -37,7 +41,7 @@ class Chess:
                 print("[chess] Game exited.")
                 return
             elif parsedInput == INPUT_STATUS.UNDO:
-                reverse_result = self.reverse_move()
+                reverse_result = reverse_move(self.board, self.moves)
                 if reverse_result == False:
                     print("[chess] No moves to undo.")
                 else:
@@ -74,15 +78,6 @@ class Chess:
         #     return Color.BLACK:
         # else:
         #     return Color.WHITE
-
-
-
-            # case on status.
-            # if regular, just move the piece
-            # if capture, move the piece, and restore piece at old spot
-            # if pawn promote, move the pawn back. remove the promoted piece
-            # if pawn enpassant, treat it like capture
-            # if castle, restore the king and rook
 
 
 if __name__ == "__main__":

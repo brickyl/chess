@@ -45,10 +45,10 @@ class King(Piece, StraightMove):
                 return Move.QUEENSIDE_CASTLE
 
         return Move.INVALID
-    
+
     def try_move(self, status, board, row, col, moves):
         if status == Move.REGULAR or status == Move.CAPTURE:
-            return super().move(board, row, col, moves) 
+            return super().try_move(status, board, row, col, moves)
         else:
             oldRow, oldCol = self.row, self.col
 
@@ -56,11 +56,14 @@ class King(Piece, StraightMove):
                 rook = board.getPieceAtLocation(row, 0)
                 oldRookRow, oldRookCol = rook.row, rook.col
                 board.transport(rook, row, rook.col + 2)
+                board.transport(self, row, col)
+                return (self, oldRow, oldCol, status, (rook, oldRookRow, oldRookCol))
+                
 
-            else:
+            elif status == Move.QUEENSIDE_CASTLE:
                 rook = board.getPieceAtLocation(row, 7)
                 oldRookRow, oldRookCol = rook.row, rook.col
                 board.transport(rook, row, rook.col - 3)
-            
-            board.transport(self, row, col)
-            return (self, oldRow, oldCol, status, (rook, oldRookRow, oldRookCol))
+                board.transport(self, row, col)
+                return (self, oldRow, oldCol, status, (rook, oldRookRow, oldRookCol))
+

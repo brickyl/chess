@@ -5,6 +5,7 @@ from pieces.queen import Queen
 from pieces.king import King
 from pieces.knight import Knight
 from constants import Color, Move
+from utils.move_logging import reverse_move
 
 
 class Board:
@@ -12,39 +13,39 @@ class Board:
         self.board = [[None for i in range(8)] for j in range(8)]
         self.white = []
         self.black = []
-        self.white_king = King(0, 3, Color.WHITE, self)
-        self.black_king = King(7, 3, Color.BLACK, self)
+        # self.white_king = King(0, 3, Color.WHITE, self)
+        # self.black_king = King(7, 3, Color.BLACK, self)
 
-        # Pawns
-        for i in range(8):
-            for j in range(8):
-                if i == 1:
-                    Pawn(i, j, Color.WHITE, self)
+        # # Pawns
+        # for i in range(8):
+        #     for j in range(8):
+        #         if i == 1:
+        #             Pawn(i, j, Color.WHITE, self)
 
-                if i == 6:
-                    Pawn(i, j, Color.BLACK, self)
+        #         if i == 6:
+        #             Pawn(i, j, Color.BLACK, self)
 
         # Queens
         Queen(0, 4, Color.WHITE, self)
         Queen(7, 4, Color.BLACK, self)
 
-        # Rooks
-        Rook(0, 0, Color.WHITE, self)
-        Rook(0, 7, Color.WHITE, self)
-        Rook(7, 0, Color.BLACK, self)
-        Rook(7, 7, Color.BLACK, self)
+        # # Rooks
+        # Rook(0, 0, Color.WHITE, self)
+        # Rook(0, 7, Color.WHITE, self)
+        # Rook(7, 0, Color.BLACK, self)
+        # Rook(7, 7, Color.BLACK, self)
 
-        # Bishops
-        Bishop(0, 2, Color.WHITE, self)
-        Bishop(0, 5, Color.WHITE, self)
-        Bishop(7, 2, Color.BLACK, self)
-        Bishop(7, 5, Color.BLACK, self)
+        # # Bishops
+        # Bishop(0, 2, Color.WHITE, self)
+        # Bishop(0, 5, Color.WHITE, self)
+        # Bishop(7, 2, Color.BLACK, self)
+        # Bishop(7, 5, Color.BLACK, self)
 
-        # Knights
-        Knight(0, 1, Color.WHITE, self)
-        Knight(0, 6, Color.WHITE, self)
-        Knight(7, 1, Color.BLACK, self)
-        Knight(7, 6, Color.BLACK, self)
+        # # Knights
+        # Knight(0, 1, Color.WHITE, self)
+        # Knight(0, 6, Color.WHITE, self)
+        # Knight(7, 1, Color.BLACK, self)
+        # Knight(7, 6, Color.BLACK, self)
 
     def printBoard(self):
         # debugging mode: the rows are 0-indexed right now
@@ -73,19 +74,25 @@ class Board:
         self.board[row][col] = piece
 
     def checkDetect(self):
-        # instead of checking every single piece, maybe check the row, column, and diagonals 
+        # instead of checking every single piece, maybe check the row, column, and diagonals
         # that the king is on, plus knights of the opposite color. only check until you run
         # into a piece (only knight can jump).
         for piece in self.black:
-            if piece.check_move(self, self.white_king.row, self.white_king.col, None) != Move.INVALID:
+            if (
+                piece.check_move(self, self.white_king.row, self.white_king.col, None)
+                != Move.INVALID
+            ):
                 return Color.WHITE
-            
+
         for piece in self.white:
-            if piece.check_move(self, self.black_king.row, self.black_king.col, None) != Move.INVALID:
+            if (
+                piece.check_move(self, self.black_king.row, self.black_king.col, None)
+                != Move.INVALID
+            ):
                 return Color.BLACK
-        
+
         return None
-    
+
     def pieceRemoval(self, piece):
         # function to remove a piece from a board using row and col
         self.setPieceAtLocation(piece.row, piece.col, None)
@@ -97,7 +104,7 @@ class Board:
     def pieceRestore(self, piece):
         if piece in self.white or piece in self.black:
             raise Exception("Tried to restore active piece.")
-        
+
         self.setPieceAtLocation(piece.row, piece.col, piece)
         if piece.color == Color.WHITE:
             self.white.append(piece)
@@ -109,24 +116,93 @@ class Board:
         self.setPieceAtLocation(newRow, newCol, piece)
         piece.row = newRow
         piece.col = newCol
-            
-    # check detection 
-    # rule 1: if you are in check, you must get out of check
-    # rule 2: you cannot make a move that puts you or leaves you in check (same thing)
-    # how to validate a move without making it??? -- my current approach: you do make it. you just reverse it...
-    # reverse move <-- two separate versions of this? reversing move(s) that actually happen vs. validating moves with one reversal if fail
 
-    # need to write a function to force push the changes to the board to the move_log and then reverse it
-    # basically, i want to make the move anyway and then reverse it. maybe I ought to do it AFTER the move instead of in the move
+    def countMoves(self, moves, forCheckmate=False):
+        # returns the number of moves that are valid given a certain board and moves (necessary for calculating en passant)
+        success = 0
+
+        # write the brute force version first, then update the move checking process to be more efficient
+
+        for piece in self.black:
+            if isinstance(piece, King):
+                movesToTry = [
+                    (1, 1),
+                    (1, 0),
+                    (1, -1),
+                    (0, 1),
+                    (0, -1),
+                    (-1, 1),
+                    (-1, 0),
+                    (-1, -1),
+                ]
+                for tup in movesToTry:
+                    a, b = tup
+                    try:
+                        if piece.move(self, piece.row + a, piece.col + b, moves) == True:
+                            success += 1
+                            if forCheckmate:
+                                return True
+                            reverse_move(self, moves)
+                    except IndexError:
+                        pass
+
+            if isinstance(piece, Pawn):
+                movesToTry = [1, 0, -1]
+                for move in movesToTry:
+                    try:
+                        newRow = piece.row + piece.color.value
+                        newCol = piece.col + move
+                        if piece.move(self, newRow, newCol, moves) == True:
+                            success += 1
+                            print(piece.row, piece.col, newRow, newCol)
+                            if forCheckmate:
+                                return True
+                            reverse_move(self, moves)
+
+                    except IndexError:
+                        pass
+
+                try:
+                    newRow = piece.row + piece.color.value * 2
+                    if piece.move(self, newRow, piece.col, moves) == True:
+                        success += 1
+                        print(piece.row, piece.col, newRow, piece.col)
+
+                        if forCheckmate:
+                            return True
+                        reverse_move(self, moves)
+                except IndexError:
+                    pass
+
+            if isinstance(piece, Queen):
+                pass
+
+            if isinstance(piece, Bishop):
+                pass
+
+            if isinstance(piece, Knight):
+                pass
+
+            if isinstance(piece, Rook):
+                pass
+
+        for piece in self.white:
+            pass
+
+        if success == 0 and forCheckmate:
+            return False
+
+        return success
+
+    def detectCheckmate(self):
+        # uses a snippet of count_moves() code to see if there are more than 0 valid moves
+        pass
+
+    # COUNT VALID MOVES FUNCTION
+    # CHECKMATE DETECTION FUNCTION
 
     # checkmate detection(?)
     # checkmate is when no matter what move you make, your king will get gobbled up nom nom
     # checkmate also occurs when you cannot make any valid moves while being in check <-- stop counting as soon as there's 1 valid move
     # stalemate occurs when you cannot make any valid moves while NOT in check <-- stop counting as soon as there's 1 valid move
     # can count number of moves SMARTLY for each piece
-
-    # each time a piece is moved, they need to call checkDetect AFTER THE MOVE for validity for themselves and also enemy king
-    # if causing self check, invalidate the move... by reversing it?
-    # if causing enemy king check, then set enemy king check status to true
-
-

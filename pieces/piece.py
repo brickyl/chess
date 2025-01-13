@@ -2,6 +2,7 @@ from abc import ABCMeta, abstractmethod
 from constants import Color, Move
 from utils.move_logging import log_move, reverse_move
 
+
 class Piece(object, metaclass=ABCMeta):
     @abstractmethod
     def __init__(self, name, row, col, color, board):
@@ -16,6 +17,7 @@ class Piece(object, metaclass=ABCMeta):
             board.black.append(self)
         board.board[row][col] = self
 
+# cursor.sh
     @abstractmethod
     def check_move(self, board, row, col, moves):
         # returns enum that represents move status
@@ -52,7 +54,6 @@ class Piece(object, metaclass=ABCMeta):
             return False
         else:
             return True
-
 
     def __str__(self):
         if self.color == Color.WHITE:
