@@ -53,7 +53,7 @@ class Pawn(Piece):
                 and abs(col - self.col) == 1
                 and len(moves) > 0
             ):
-                (lastMovePiece, lastMoveStartRow, lastMoveStartCol, _) = moves[-1]
+                (lastMovePiece, lastMoveStartRow, lastMoveStartCol, *extra) = moves[-1]
                 lastMoveDestRow, lastMoveDestCol = lastMovePiece.row, lastMovePiece.col
                 if (
                     type(lastMovePiece) == Pawn

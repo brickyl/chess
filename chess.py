@@ -29,7 +29,7 @@ class Chess:
                 "'!",
                 sep="",
             )
-            total_moves = self.board.countMoves(self.moves)
+            total_moves = self.board.countMoves(self.moves, player)
             print("[chess] Total available moves: " + str(total_moves))
 
             move = input()

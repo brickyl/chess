@@ -13,39 +13,39 @@ class Board:
         self.board = [[None for i in range(8)] for j in range(8)]
         self.white = []
         self.black = []
-        # self.white_king = King(0, 3, Color.WHITE, self)
-        # self.black_king = King(7, 3, Color.BLACK, self)
+        self.white_king = King(0, 3, Color.WHITE, self)
+        self.black_king = King(7, 3, Color.BLACK, self)
 
-        # # Pawns
-        # for i in range(8):
-        #     for j in range(8):
-        #         if i == 1:
-        #             Pawn(i, j, Color.WHITE, self)
+        # Pawns
+        for i in range(8):
+            for j in range(8):
+                if i == 1:
+                    Pawn(i, j, Color.WHITE, self)
 
-        #         if i == 6:
-        #             Pawn(i, j, Color.BLACK, self)
+                if i == 6:
+                    Pawn(i, j, Color.BLACK, self)
 
         # Queens
         Queen(0, 4, Color.WHITE, self)
         Queen(7, 4, Color.BLACK, self)
 
-        # # Rooks
-        # Rook(0, 0, Color.WHITE, self)
-        # Rook(0, 7, Color.WHITE, self)
-        # Rook(7, 0, Color.BLACK, self)
-        # Rook(7, 7, Color.BLACK, self)
+        # Rooks
+        Rook(0, 0, Color.WHITE, self)
+        Rook(0, 7, Color.WHITE, self)
+        Rook(7, 0, Color.BLACK, self)
+        Rook(7, 7, Color.BLACK, self)
 
-        # # Bishops
-        # Bishop(0, 2, Color.WHITE, self)
-        # Bishop(0, 5, Color.WHITE, self)
-        # Bishop(7, 2, Color.BLACK, self)
-        # Bishop(7, 5, Color.BLACK, self)
+        # Bishops
+        Bishop(0, 2, Color.WHITE, self)
+        Bishop(0, 5, Color.WHITE, self)
+        Bishop(7, 2, Color.BLACK, self)
+        Bishop(7, 5, Color.BLACK, self)
 
-        # # Knights
-        # Knight(0, 1, Color.WHITE, self)
-        # Knight(0, 6, Color.WHITE, self)
-        # Knight(7, 1, Color.BLACK, self)
-        # Knight(7, 6, Color.BLACK, self)
+        # Knights
+        Knight(0, 1, Color.WHITE, self)
+        Knight(0, 6, Color.WHITE, self)
+        Knight(7, 1, Color.BLACK, self)
+        Knight(7, 6, Color.BLACK, self)
 
     def printBoard(self):
         # debugging mode: the rows are 0-indexed right now
@@ -117,14 +117,18 @@ class Board:
         piece.row = newRow
         piece.col = newCol
 
-    def countMoves(self, moves, forCheckmate=False):
+    def countMoves(self, moves, player, forCheckmate=False):
         # returns the number of moves that are valid given a certain board and moves (necessary for calculating en passant)
         success = 0
+        if player == Color.WHITE:
+            allpieces = self.white
+        else:
+            allpieces = self.black
 
         # write the brute force version first, then update the move checking process to be more efficient
-
-        for piece in self.black:
+        for piece in allpieces:
             if isinstance(piece, King):
+                # neglecting castle case
                 movesToTry = [
                     (1, 1),
                     (1, 0),
@@ -134,12 +138,24 @@ class Board:
                     (-1, 1),
                     (-1, 0),
                     (-1, -1),
+                    (0, 2),
+                    (0, -2),
                 ]
                 for tup in movesToTry:
                     a, b = tup
                     try:
-                        if piece.move(self, piece.row + a, piece.col + b, moves) == True:
+                        newRow = piece.row + a
+                        newCol = piece.col + b
+                        if (
+                            newRow > -1
+                            and newCol > -1
+                            and newRow < 8
+                            and newCol < 8
+                            and piece.move(self, piece.row + a, piece.col + b, moves)
+                            == True
+                        ):
                             success += 1
+                            # print(piece.row + a, piece.col + b)
                             if forCheckmate:
                                 return True
                             reverse_move(self, moves)
@@ -147,18 +163,24 @@ class Board:
                         pass
 
             if isinstance(piece, Pawn):
+                # promotion case is probably weird... how to fix?
+                # enpassant?
                 movesToTry = [1, 0, -1]
                 for move in movesToTry:
                     try:
                         newRow = piece.row + piece.color.value
                         newCol = piece.col + move
-                        if piece.move(self, newRow, newCol, moves) == True:
+                        if (
+                            newRow > -1
+                            and newRow < 8
+                            and newCol > -1
+                            and newCol < 8
+                            and piece.move(self, newRow, newCol, moves) == True
+                        ):
                             success += 1
-                            print(piece.row, piece.col, newRow, newCol)
                             if forCheckmate:
                                 return True
                             reverse_move(self, moves)
-
                     except IndexError:
                         pass
 
@@ -166,28 +188,112 @@ class Board:
                     newRow = piece.row + piece.color.value * 2
                     if piece.move(self, newRow, piece.col, moves) == True:
                         success += 1
-                        print(piece.row, piece.col, newRow, piece.col)
-
                         if forCheckmate:
                             return True
                         reverse_move(self, moves)
                 except IndexError:
                     pass
 
-            if isinstance(piece, Queen):
-                pass
-
-            if isinstance(piece, Bishop):
-                pass
+            if isinstance(piece, Bishop) or isinstance(piece, Queen):
+                for i in range(8):
+                    newRow1 = piece.row + i
+                    newCol1 = piece.col + i
+                    newRow2 = piece.row - i
+                    newCol2 = piece.col - i
+                    try:
+                        if (
+                            newRow1 > -1
+                            and newRow1 < 8
+                            and newCol1 > -1
+                            and newCol1 < 8
+                            and piece.move(self, newRow1, newCol1, moves) == True
+                        ):
+                            success += 1
+                            if forCheckmate:
+                                return True
+                            reverse_move(self, moves)
+                        if (
+                            newRow2 > -1
+                            and newRow2 < 8
+                            and newCol2 > -1
+                            and newCol2 < 8
+                            and piece.move(self, newRow2, newCol2, moves) == True
+                        ):
+                            success += 1
+                            if forCheckmate:
+                                return True
+                            reverse_move(self, moves)
+                        if (
+                            newRow1 > -1
+                            and newRow1 < 8
+                            and newCol2 > -1
+                            and newCol2 < 8
+                            and piece.move(self, newRow1, newCol2, moves) == True
+                        ):
+                            success += 1
+                            if forCheckmate:
+                                return True
+                            reverse_move(self, moves)
+                        if (
+                            newRow2 > -1
+                            and newRow2 < 8
+                            and newCol1 > -1
+                            and newCol1 < 8
+                            and piece.move(self, newRow2, newCol1, moves) == True
+                        ):
+                            success += 1
+                            if forCheckmate:
+                                return True
+                            reverse_move(self, moves)
+                    except IndexError:
+                        pass
 
             if isinstance(piece, Knight):
-                pass
+                movesToTry = [
+                    (2, 1),
+                    (1, 2),
+                    (-2, -1),
+                    (-1, -2),
+                    (2, -1),
+                    (-1, 2),
+                    (1, -2),
+                    (-2, 1),
+                ]
+                for tup in movesToTry:
+                    a, b = tup
+                    try:
+                        newRow = piece.row + a
+                        newCol = piece.col + b
+                        if (
+                            newRow > -1
+                            and newRow < 8
+                            and newCol > -1
+                            and newCol < 8
+                            and piece.move(self, newRow, newCol, moves)
+                            == True
+                        ):
+                            success += 1
+                            if forCheckmate:
+                                return True
+                            reverse_move(self, moves)
+                    except IndexError:
+                        pass
 
-            if isinstance(piece, Rook):
-                pass
-
-        for piece in self.white:
-            pass
+            if isinstance(piece, Rook) or isinstance(piece, Queen):
+                for i in range(8):
+                    try:
+                        if piece.move(self, piece.row, i, moves) == True:
+                            success += 1
+                            if forCheckmate:
+                                return True
+                            reverse_move(self, moves)
+                        if piece.move(self, i, piece.col, moves) == True:
+                            success += 1
+                            if forCheckmate:
+                                return True
+                            reverse_move(self, moves)
+                    except IndexError:
+                        pass
 
         if success == 0 and forCheckmate:
             return False
